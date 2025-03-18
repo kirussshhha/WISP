@@ -4,6 +4,11 @@ import (
 	"os"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"go.uber.org/fx"
+)
+
+var Module = fx.Options(
+    fx.Provide(NewLogger),
 )
 
 func NewLogger() zerolog.Logger {
