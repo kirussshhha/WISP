@@ -8,10 +8,10 @@ import (
 )
 
 type Resolver struct {
-    services *service.Services
+    services service.ServicesInterface
 }
 
-func NewResolver(services *service.Services) *Resolver {
+func NewResolver(services service.ServicesInterface) *Resolver {
     return &Resolver{
         services: services,
     }

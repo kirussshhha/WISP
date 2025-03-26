@@ -18,11 +18,11 @@ var Module = fx.Options(
 
 type Handler struct {
 	Gin            *gin.Engine
-	Services       *service.Services
+	Services       service.ServicesInterface
 	GraphQLHandler *graphql.GraphQLHandler
 }
 
-func NewHTTPServer(service *service.Services, gqHandler *graphql.GraphQLHandler) *Handler {
+func NewHTTPServer(service service.ServicesInterface, gqHandler *graphql.GraphQLHandler) *Handler {
 	engine := gin.Default()
 	return &Handler{
 		Gin:            engine,
@@ -38,6 +38,27 @@ func registerRoutes(h *Handler) {
 		v1.GET("/time/:format", h.GetTimeWithPathFormat)
 		v1.GET("/time-query", h.GetTimeWithQueryFormat)
 		v1.POST("/time-diff", h.CalculateTimeDifference)
+
+		user := v1.Group("/user")
+		{
+			user.POST("", h.CreateUser)
+			user.GET("", h.GetUser)
+			user.GET("/:id", h.GetUserByID)
+			user.DELETE("/:id", h.DeleteUser)
+		}
+		team := v1.Group("/team")
+		{
+			team.POST("", h.CreateTeam)
+			team.GET("", h.GetTeams)
+			team.PUT("", h.UpdateTeam)
+			team.DELETE("/:id", h.DeleteTeam)
+		}
+		teamMember := v1.Group("/team-member")
+		{	
+			teamMember.GET("", h.GetTeams)
+			teamMember.POST("/:userId/invite/:teamId", h.CreateTeamMember)
+			teamMember.DELETE("/:userId/leave/:teamId", h.RemoveTeamMember)
+		}
 	}
 
 	v2 := h.Gin.Group("/api/v2")

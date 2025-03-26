@@ -1,13 +1,22 @@
 package service
 
 import (
-	"WISP/internal/core/domain"
+	"WISP/internal/adapters/repositories"
+	"WISP/internal/interfaces"
 
 	"go.uber.org/fx"
 )
 
 type Services struct {
-	notes map[string]*domain.Note
+	r *repositories.Repository
+}
+
+type ServicesInterface interface {
+	interfaces.UserServiceInterface
+	interfaces.TeamMembersServiceInterface
+	interfaces.TeamServiceInterface
+	interfaces.NoteServiceInterface
+	interfaces.TimeServiceInterface
 }
 
 var Module = fx.Options(
@@ -16,8 +25,8 @@ var Module = fx.Options(
 	),
 )
 
-func NewServices() *Services {
+func NewServices(r *repositories.Repository) ServicesInterface {
 	return &Services{
-		notes: make(map[string]*domain.Note),
+		r,
 	}
 }

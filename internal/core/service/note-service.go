@@ -2,7 +2,6 @@ package service
 
 import (
 	"WISP/internal/core/domain"
-	"fmt"
 
 	"github.com/google/uuid"
 )
@@ -13,21 +12,13 @@ func (s *Services) CreateNote(title, content string) (*domain.Note, error) {
 		Title:   title,
 		Content: content,
 	}
-	s.notes[note.ID] = note
-	return note, nil
+	return s.r.Note.Create(note)
 }
 
 func (s *Services) GetNoteByID(id string) (*domain.Note, error) {
-	if note, exist := s.notes[id]; exist {
-		return note, nil
-	}
-	return nil, fmt.Errorf("note not found")
+	return s.r.Note.GetByID(id)
 }
 
 func (s *Services) ListNotes() ([]*domain.Note, error) {
-	notes := make([]*domain.Note, 0, len(s.notes))
-	for _, note := range s.notes {
-		notes = append(notes, note)
-	}
-	return notes, nil
+	return s.r.Note.List()
 }
