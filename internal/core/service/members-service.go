@@ -6,15 +6,29 @@ import (
 	"github.com/google/uuid"
 )
 
-
 func (s *Services) CreateTeamMember(userID uuid.UUID, teamID uuid.UUID) (*domain.TeamMember, error) {
-	return s.r.DB.CreateTeamMember(userID, teamID)
+	res, err := s.r.DB.CreateTeamMember(userID, teamID)
+	if err != nil {
+		return nil, domain.ErrInternal
+	}
+
+	return res, nil
 }
 
 func (s *Services) GetTeamMembers() ([]*domain.TeamMember, error) {
-	return s.r.DB.GetTeamMembers()
+	res, err := s.r.DB.GetTeamMembers()
+	if err != nil {
+		return nil, domain.ErrInternal
+	}
+
+	return res, nil
 }
 
 func (s *Services) RemoveTeamMember(userID uuid.UUID, teamID uuid.UUID) error {
-	return s.r.DB.RemoveTeamMember(userID, teamID)
+	err := s.r.DB.RemoveTeamMember(userID, teamID)
+	if err != nil {
+		return domain.ErrInternal
+	}
+
+	return nil
 }

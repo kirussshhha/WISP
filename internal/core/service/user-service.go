@@ -8,17 +8,37 @@ import (
 
 func (s *Services) CreateUser(user *domain.User) (*domain.User, error) {
 	user.ID = uuid.New()
-    return s.r.DB.CreateUser(user)
+	res, err := s.r.DB.CreateUser(user)
+	if err != nil {
+		return nil, domain.ErrInternal
+	}
+
+	return res, nil
 }
 
 func (s *Services) GetUserByEmail(email string) (*domain.User, error) {
-    return s.r.DB.GetUserByEmail(email)
+	res, err := s.r.DB.GetUserByEmail(email)
+	if err != nil {
+		return nil, domain.ErrInternal
+	}
+
+	return res, nil
 }
 
 func (s *Services) GetUserByID(id uuid.UUID) (*domain.User, error) {
-	return s.r.DB.GetUserByID(id)
+	res, err := s.r.DB.GetUserByID(id)
+	if err != nil {
+		return nil, domain.ErrInternal
+	}
+
+	return res, nil
 }
 
 func (s *Services) DeleteUser(id uuid.UUID) error {
-	return s.r.DB.DeleteUser(id)
+	err := s.r.DB.DeleteUser(id)
+	if err != nil {
+		return domain.ErrInternal
+	}
+
+	return nil
 }

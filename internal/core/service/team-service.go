@@ -8,17 +8,37 @@ import (
 
 func (s *Services) CreateTeam(team *domain.Team) (*domain.Team, error) {
 	team.ID = uuid.New()
-	return s.r.DB.CreateTeam(team)
+	res, err := s.r.DB.CreateTeam(team)
+	if err != nil {
+		return nil, domain.ErrInternal
+	}
+
+	return res, nil
 }
 
 func (s *Services) GetTeams() ([]*domain.Team, error) {
-	return s.r.DB.GetTeams()
+	res, err := s.r.DB.GetTeams()
+	if err != nil {
+		return nil, domain.ErrInternal
+	}
+
+	return res, nil
 }
 
 func (s *Services) UpdateTeam(team *domain.Team) (*domain.Team, error) {
-	return s.r.DB.UpdateTeam(team)
+	res, err := s.r.DB.UpdateTeam(team)
+	if err != nil {
+		return nil, domain.ErrInternal
+	}
+
+	return res, nil
 }
 
 func (s *Services) DeleteTeam(id uuid.UUID) error {
-	return s.r.DB.DeleteTeam(id)
+	err := s.r.DB.DeleteTeam(id)
+	if err != nil {
+		return domain.ErrInternal
+	}
+
+	return nil
 }

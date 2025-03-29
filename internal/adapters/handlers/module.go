@@ -50,12 +50,12 @@ func registerRoutes(h *Handler) {
 		{
 			team.POST("", h.CreateTeam)
 			team.GET("", h.GetTeams)
-			team.PUT("", h.UpdateTeam)
+			team.PUT("/:id", h.UpdateTeam)
 			team.DELETE("/:id", h.DeleteTeam)
 		}
 		teamMember := v1.Group("/team-member")
 		{	
-			teamMember.GET("", h.GetTeams)
+			teamMember.GET("", h.GetTeamMembers)
 			teamMember.POST("/:userId/invite/:teamId", h.CreateTeamMember)
 			teamMember.DELETE("/:userId/leave/:teamId", h.RemoveTeamMember)
 		}

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"WISP/internal/core/dto"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -26,7 +27,13 @@ func (h *Handler) CreateTeamMember(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"data": createdTeamMember})
+	res := dto.ToTeamMemberDTO(
+		createdTeamMember.UserID,
+		createdTeamMember.TeamID,
+		createdTeamMember.CreatedAt,
+		createdTeamMember.UpdatedAt,
+	)
+	c.JSON(http.StatusCreated, gin.H{"data": res})
 }
 
 func (h *Handler) GetTeamMembers(c *gin.Context) {
@@ -36,7 +43,16 @@ func (h *Handler) GetTeamMembers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": teamMembers})
+	var res []dto.TeamMember
+	for _, teamMember := range teamMembers {
+		res = append(res, *dto.ToTeamMemberDTO(
+			teamMember.UserID,
+			teamMember.TeamID,
+			teamMember.CreatedAt,
+			teamMember.UpdatedAt,
+		))
+	}
+	c.JSON(http.StatusOK, gin.H{"data": res})
 }
 
 func (h *Handler) RemoveTeamMember(c *gin.Context) {
@@ -60,4 +76,3 @@ func (h *Handler) RemoveTeamMember(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Team member removed"})
 }
-

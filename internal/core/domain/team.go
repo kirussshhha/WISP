@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type Team struct {	
+type Team struct {
 	ID          uuid.UUID
 	Name        string
 	Description string
