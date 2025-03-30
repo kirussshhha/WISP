@@ -6,16 +6,19 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 )
 
 func (d *Database) CreateUser(user *domain.User) (*domain.User, error) {
 	userDB := dbm.NewUserDBM(user)
 	res := d.Create(userDB)
 	if res.Error != nil {
+		log.Error().Err(res.Error).Str("repository", "CreateUser").Msg("Failed to create user")
 		return nil, res.Error
 	}
 
 	if res.RowsAffected == 0 {
+		log.Error().Str("repository", "CreateUser").Msg("User wasn't created")
 		return nil, errors.New("USER WASN'T CREATED")
 	}
 
@@ -28,6 +31,7 @@ func (d *Database) GetUsers() ([]*domain.User, error) {
 
 	err := d.Find(&usersDBM).Error
 	if err != nil {
+		log.Error().Err(err).Str("repository", "GetUsers").Msg("Failed to get users")
 		return nil, err
 	}
 
@@ -44,6 +48,7 @@ func (d *Database) GetUserByEmail(email string) (*domain.User, error) {
 
 	err := d.Where("email = ?", email).First(&userDBM).Error
 	if err != nil {
+		log.Error().Err(err).Str("repository", "GetUserByEmail").Msg("Failed to get user by email")
 		return nil, err
 	}
 
@@ -56,6 +61,7 @@ func (d *Database) GetUserByID(id uuid.UUID) (*domain.User, error) {
 
 	res := d.First(&userDBM, id)
 	if res.Error != nil {
+		log.Error().Err(res.Error).Str("repository", "GetUserByID").Msg("Failed to get user by ID")
 		return nil, res.Error
 	}
 
@@ -70,6 +76,7 @@ func (d *Database) GetUserByID(id uuid.UUID) (*domain.User, error) {
 func (d *Database) UpdateUser(user *domain.User) (*domain.User, error) {
 	var existingUser dbm.User
 	if err := d.First(&existingUser, "id = ?", user.ID).Error; err != nil {
+		log.Error().Err(err).Str("repository", "UpdateUser").Msg("Failed to find user")
 		return nil, err
 	}
 
@@ -78,6 +85,7 @@ func (d *Database) UpdateUser(user *domain.User) (*domain.User, error) {
 	existingUser.Password = user.Password
 
 	if err := d.Save(&existingUser).Error; err != nil {
+		log.Error().Err(err).Str("repository", "UpdateUser").Msg("Failed to update user")
 		return nil, err
 	}
 
@@ -87,6 +95,7 @@ func (d *Database) UpdateUser(user *domain.User) (*domain.User, error) {
 func (d *Database) DeleteUser(id uuid.UUID) error {
 	res := d.Unscoped().Where("id = ?", id).Delete(&dbm.User{})
 	if res.Error != nil {
+		log.Error().Err(res.Error).Str("repository", "DeleteUser").Msg("Failed to delete user")
 		return res.Error
 	}
 

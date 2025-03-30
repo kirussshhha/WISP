@@ -8,11 +8,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 )
 
 func (h *Handler) CreateTeam(c *gin.Context) {
 	var team clients.TeamContract
 	if err := c.ShouldBindJSON(&team); err != nil {
+		log.Error().Err(err).Str("handler", "CreateTeam").Msg("Failed to bind JSON")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -23,6 +25,7 @@ func (h *Handler) CreateTeam(c *gin.Context) {
 	})
 
 	if err != nil {
+		log.Error().Err(err).Str("handler", "CreateTeam").Msg("Failed to create team")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -40,6 +43,7 @@ func (h *Handler) CreateTeam(c *gin.Context) {
 func (h *Handler) GetTeams(c *gin.Context) {
 	teams, err := h.Services.GetTeams()
 	if err != nil {
+		log.Error().Err(err).Str("handler", "GetTeams").Msg("Failed to get teams")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -60,12 +64,14 @@ func (h *Handler) GetTeams(c *gin.Context) {
 func (h *Handler) GetTeamByID(c *gin.Context) {
 	parsedID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
+		log.Error().Err(err).Str("handler", "GetTeamByID").Msg("Failed to parse ID")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	team, err := h.Services.GetTeamByID(parsedID)
 	if err != nil {
+		log.Error().Err(err).Str("handler", "GetTeamByID").Msg("Failed to get team by ID")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -83,12 +89,14 @@ func (h *Handler) GetTeamByID(c *gin.Context) {
 func (h *Handler) UpdateTeam(c *gin.Context) {
 	parsedID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
+		log.Error().Err(err).Str("handler", "UpdateTeam").Msg("Failed to parse ID")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	var team clients.TeamContract
 	if err := c.ShouldBindJSON(&team); err != nil {
+		log.Error().Err(err).Str("handler", "UpdateTeam").Msg("Failed to bind JSON")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -100,6 +108,7 @@ func (h *Handler) UpdateTeam(c *gin.Context) {
 	})
 
 	if err != nil {
+		log.Error().Err(err).Str("handler", "UpdateTeam").Msg("Failed to update team")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -117,12 +126,14 @@ func (h *Handler) UpdateTeam(c *gin.Context) {
 func (h *Handler) DeleteTeam(c *gin.Context) {
 	parsedID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
+		log.Error().Err(err).Str("handler", "DeleteTeam").Msg("Failed to parse ID")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	err = h.Services.DeleteTeam(parsedID)
 	if err != nil {
+		log.Error().Err(err).Str("handler", "DeleteTeam").Msg("Failed to delete team")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

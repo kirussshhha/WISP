@@ -2,11 +2,12 @@ package handlers
 
 import (
 	"WISP/internal/adapters/graphql"
+	"WISP/internal/adapters/handlers/middleware"
 	"WISP/internal/core/service"
 	"context"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 	"go.uber.org/fx"
 )
 
@@ -24,6 +25,11 @@ type Handler struct {
 
 func NewHTTPServer(service service.ServicesInterface, gqHandler *graphql.GraphQLHandler) *Handler {
 	engine := gin.Default()
+
+	engine.Use(
+		middleware.NewLoggerMiddleware(),
+	)
+
 	return &Handler{
 		Gin:            engine,
 		Services:       service,
@@ -56,7 +62,7 @@ func registerRoutes(h *Handler) {
 			team.DELETE("/:id", h.DeleteTeam)
 		}
 		teamMember := v1.Group("/team-member")
-		{	
+		{
 			teamMember.GET("", h.GetTeamMembers)
 			teamMember.POST("/:userId/invite/:teamId", h.CreateTeamMember)
 			teamMember.DELETE("/:userId/leave/:teamId", h.RemoveTeamMember)
@@ -74,12 +80,12 @@ func registerRoutes(h *Handler) {
 func runHTTPServer(lifecycle fx.Lifecycle, h *Handler) {
 	lifecycle.Append(fx.Hook{
 		OnStart: func(context.Context) error {
-			fmt.Println("Starting Application")
+			log.Info().Msg("Starting Application")
 			go h.Gin.Run(":8080")
 			return nil
 		},
 		OnStop: func(context.Context) error {
-			fmt.Println("Stopping Application")
+			log.Info().Msg("Stopping Application")
 			return nil
 		},
 	})

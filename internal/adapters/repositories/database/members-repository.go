@@ -6,6 +6,7 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 )
 
 func (d *Database) CreateTeamMember(userID uuid.UUID, teamID uuid.UUID) (*domain.TeamMember, error) {
@@ -16,6 +17,7 @@ func (d *Database) CreateTeamMember(userID uuid.UUID, teamID uuid.UUID) (*domain
 
 	res := d.Create(teamMember)
 	if res.Error != nil {
+		log.Error().Err(res.Error).Str("repository", "CreateTeamMember").Msg("Failed to create team member")
 		return nil, res.Error
 	}
 
@@ -31,6 +33,7 @@ func (d *Database) GetTeamMembers() ([]*domain.TeamMember, error) {
 
 	err := d.Find(&teamMembersDBM).Error
 	if err != nil {
+		log.Error().Err(err).Str("repository", "GetTeamMembers").Msg("Failed to get team members")
 		return nil, err
 	}
 
@@ -45,6 +48,7 @@ func (d *Database) GetTeamMembers() ([]*domain.TeamMember, error) {
 func (d *Database) RemoveTeamMember(userID uuid.UUID, teamID uuid.UUID) error {
 	res := d.Unscoped().Where("user_id = ? AND team_id = ?", userID, teamID).Delete(&dbm.TeamMember{})
 	if res.Error != nil {
+		log.Error().Err(res.Error).Str("repository", "RemoveTeamMember").Msg("Failed to remove team member")
 		return res.Error
 	}
 

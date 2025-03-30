@@ -6,12 +6,14 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 )
 
 func (d *Database) CreateTeam(team *domain.Team) (*domain.Team, error) {
 	teamDB := dbm.NewTeamDBM(team)
 	res := d.Create(teamDB)
 	if res.Error != nil {
+		log.Error().Err(res.Error).Str("repository", "CreateTeam").Msg("Failed to create team")
 		return nil, res.Error
 	}
 
@@ -28,6 +30,7 @@ func (d *Database) GetTeams() ([]*domain.Team, error) {
 
 	err := d.Find(&teamsDBM).Error
 	if err != nil {
+		log.Error().Err(err).Str("repository", "GetTeams").Msg("Failed to get teams")
 		return nil, err
 	}
 
@@ -44,6 +47,7 @@ func (d *Database) GetTeamByID(id uuid.UUID) (*domain.Team, error) {
 
 	res := d.First(&teamDBM, id)
 	if res.Error != nil {
+		log.Error().Err(res.Error).Str("repository", "GetTeamByID").Msg("Failed to get team by ID")
 		return nil, res.Error
 	}
 
@@ -54,6 +58,7 @@ func (d *Database) GetTeamByID(id uuid.UUID) (*domain.Team, error) {
 func (d *Database) UpdateTeam(team *domain.Team) (*domain.Team, error) {
 	var existingTeam dbm.Team
 	if err := d.First(&existingTeam, "id = ?", team.ID).Error; err != nil {
+		log.Error().Err(err).Str("repository", "UpdateTeam").Msg("Failed to find team")
 		return nil, err
 	}
 
@@ -61,6 +66,7 @@ func (d *Database) UpdateTeam(team *domain.Team) (*domain.Team, error) {
 	existingTeam.Description = team.Description
 
 	if err := d.Save(&existingTeam).Error; err != nil {
+		log.Error().Err(err).Str("repository", "UpdateTeam").Msg("Failed to update team")
 		return nil, err
 	}
 
@@ -70,6 +76,7 @@ func (d *Database) UpdateTeam(team *domain.Team) (*domain.Team, error) {
 func (d *Database) DeleteTeam(id uuid.UUID) error {
 	res := d.Unscoped().Where("id = ?", id).Delete(&dbm.Team{})
 	if res.Error != nil {
+		log.Error().Err(res.Error).Str("repository", "DeleteTeam").Msg("Failed to delete team")
 		return res.Error
 	}
 
