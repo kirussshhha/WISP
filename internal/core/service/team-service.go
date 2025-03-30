@@ -16,6 +16,15 @@ func (s *Services) CreateTeam(team *domain.Team) (*domain.Team, error) {
 	return res, nil
 }
 
+func (s *Services) GetTeamByID(id uuid.UUID) (*domain.Team, error) {
+	res, err := s.r.DB.GetTeamByID(id)
+	if err != nil {
+		return nil, domain.ErrInternal
+	}
+
+	return res, nil
+}
+
 func (s *Services) GetTeams() ([]*domain.Team, error) {
 	res, err := s.r.DB.GetTeams()
 	if err != nil {

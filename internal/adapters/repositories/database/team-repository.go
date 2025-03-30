@@ -39,18 +39,30 @@ func (d *Database) GetTeams() ([]*domain.Team, error) {
 	return teams, nil
 }
 
+func (d *Database) GetTeamByID(id uuid.UUID) (*domain.Team, error) {
+	var teamDBM dbm.Team
+
+	res := d.First(&teamDBM, id)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	team := teamDBM.To()
+	return team, nil
+}
+
 func (d *Database) UpdateTeam(team *domain.Team) (*domain.Team, error) {
 	var existingTeam dbm.Team
-    if err := d.First(&existingTeam, "id = ?", team.ID).Error; err != nil {
-        return nil, err
-    }
+	if err := d.First(&existingTeam, "id = ?", team.ID).Error; err != nil {
+		return nil, err
+	}
 
 	existingTeam.Name = team.Name
-    existingTeam.Description = team.Description
+	existingTeam.Description = team.Description
 
-    if err := d.Save(&existingTeam).Error; err != nil {
-        return nil, err
-    }
+	if err := d.Save(&existingTeam).Error; err != nil {
+		return nil, err
+	}
 
 	return existingTeam.To(), nil
 }

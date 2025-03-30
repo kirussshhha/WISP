@@ -7,7 +7,9 @@ import (
 
 type UserServiceInterface interface {
     CreateUser(user *domain.User) (*domain.User, error)
+	GetUsers() ([]*domain.User, error)
     GetUserByEmail(email string) (*domain.User, error)
 	GetUserByID(id uuid.UUID) (*domain.User, error)	
+	UpdateUser(user *domain.User) (*domain.User, error)
 	DeleteUser(id uuid.UUID) error
 }

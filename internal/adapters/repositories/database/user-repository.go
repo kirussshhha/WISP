@@ -23,6 +23,22 @@ func (d *Database) CreateUser(user *domain.User) (*domain.User, error) {
 	return user, nil
 }
 
+func (d *Database) GetUsers() ([]*domain.User, error) {
+	var usersDBM []*dbm.User
+
+	err := d.Find(&usersDBM).Error
+	if err != nil {
+		return nil, err
+	}
+
+	users := make([]*domain.User, 0)
+	for _, user := range usersDBM {
+		users = append(users, user.To())
+	}
+
+	return users, nil
+}
+
 func (d *Database) GetUserByEmail(email string) (*domain.User, error) {
 	var userDBM dbm.User
 
@@ -49,6 +65,23 @@ func (d *Database) GetUserByID(id uuid.UUID) (*domain.User, error) {
 
 	user := userDBM.To()
 	return user, nil
+}
+
+func (d *Database) UpdateUser(user *domain.User) (*domain.User, error) {
+	var existingUser dbm.User
+	if err := d.First(&existingUser, "id = ?", user.ID).Error; err != nil {
+		return nil, err
+	}
+
+	existingUser.Username = user.Username
+	existingUser.Email = user.Email
+	existingUser.Password = user.Password
+
+	if err := d.Save(&existingUser).Error; err != nil {
+		return nil, err
+	}
+
+	return existingUser.To(), nil
 }
 
 func (d *Database) DeleteUser(id uuid.UUID) error {

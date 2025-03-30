@@ -57,6 +57,29 @@ func (h *Handler) GetTeams(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": res})
 }
 
+func (h *Handler) GetTeamByID(c *gin.Context) {
+	parsedID, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	team, err := h.Services.GetTeamByID(parsedID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	res := dto.ToTeamDTO(
+		team.ID,
+		team.Name,
+		team.Description,
+		team.CreatedAt,
+		team.UpdatedAt,
+	)
+	c.JSON(http.StatusOK, gin.H{"data": res})
+}
+
 func (h *Handler) UpdateTeam(c *gin.Context) {
 	parsedID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
