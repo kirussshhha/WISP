@@ -4,6 +4,7 @@ import (
 	"WISP/internal/adapters/graphql"
 	"WISP/internal/adapters/handlers/middleware"
 	"WISP/internal/core/service"
+	"WISP/internal/pkg/rabbitmq"
 	"context"
 
 	"github.com/gin-gonic/gin"
@@ -21,9 +22,14 @@ type Handler struct {
 	Gin            *gin.Engine
 	Services       service.ServicesInterface
 	GraphQLHandler *graphql.GraphQLHandler
+	Producer       *rabbitmq.Producer
 }
 
-func NewHTTPServer(service service.ServicesInterface, gqHandler *graphql.GraphQLHandler) *Handler {
+func NewHTTPServer(
+	service service.ServicesInterface,
+	gqHandler *graphql.GraphQLHandler,
+	producer *rabbitmq.Producer,
+) *Handler {
 	engine := gin.Default()
 
 	engine.Use(
@@ -34,6 +40,7 @@ func NewHTTPServer(service service.ServicesInterface, gqHandler *graphql.GraphQL
 		Gin:            engine,
 		Services:       service,
 		GraphQLHandler: gqHandler,
+		Producer:       producer,
 	}
 }
 
@@ -44,6 +51,8 @@ func registerRoutes(h *Handler) {
 		v1.GET("/time/:format", h.GetTimeWithPathFormat)
 		v1.GET("/time-query", h.GetTimeWithQueryFormat)
 		v1.POST("/time-diff", h.CalculateTimeDifference)
+
+		v1.POST("/test-emails", h.SendTestEmails)
 
 		user := v1.Group("/user")
 		{

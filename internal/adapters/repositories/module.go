@@ -17,7 +17,6 @@ var Module = fx.Options(
 	fx.Provide(
 		New,
 		database.NewNoteRepository,
-		config.NewConfig,
 	),
 )
 
