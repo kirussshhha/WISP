@@ -42,6 +42,27 @@ services:
     networks:
       - monitoring
 
+  n8n:
+    container_name: wd_n8n
+    image: n8nio/n8n
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - N8N_BASIC_AUTH_ACTIVE=false
+      - N8N_USER_MANAGEMENT_DISABLED=true
+      - WEBHOOK_URL=http://host.docker.internal:8080
+      - DISCORD_WEBHOOK_URL=your_discord_webhook_url
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - monitoring
+
 volumes:
   rabbitmq_data:
+    driver: local
+  n8n_data:
     driver: local
